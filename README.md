@@ -112,7 +112,6 @@ ros2 run auto_mapper auto_explorer --ros-args -p use_sim_time:=true  # 探索再
 
 - 稼働中のRViz+Nav2画面: ![稼働画面](docs/images/result_sealed_run2_screen.png)
 - 途中経過(西半分のみの時点): [result_sealed_final_map.png](docs/images/result_sealed_final_map.png)
-- 完了時のRViz画面: [result_full_house_screen.png](docs/images/result_full_house_screen.png)
 
 ## ハマりどころ(抜粋)
 
