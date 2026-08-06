@@ -57,7 +57,7 @@ flowchart TD
     Grow -- いいえ --> BL["成長ベース・ブラックリストに登録<br>(再訪しない)"] --> F
 ```
 
-詳細は [docs/algorithm.md](docs/algorithm.md) を参照。
+詳細は [docs/algorithm.md](docs/algorithm.md)、ソースの読み解きは [docs/code_reading.md](docs/code_reading.md) を参照。
 
 ## クイックスタート
 
@@ -98,7 +98,7 @@ ros2 run auto_mapper auto_explorer --ros-args -p use_sim_time:=true  # 探索再
 | `config/nav2_params_explore.yaml` | 探索用Nav2設定(track_unknown_space=false, inflation=0.15) |
 | `worlds/door_plug.sdf` | 玄関封鎖壁モデル(1.1×0.3×1.0m) |
 | `maps/` | 最終成果の地図(house_sealed_final.pgm/yaml) |
-| `docs/` | 設計・アルゴリズム・教訓・エビデンス画像 |
+|  `docs/` | 設計・アルゴリズム・教訓・エビデンス画像 |
 
 ## 成果とエビデンス
 
