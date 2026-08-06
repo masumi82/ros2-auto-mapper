@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<sdf version="1.6">
+  <model name="front_door_plug">
+    <static>true</static>
+    <link name="plug">
+      <collision name="c"><geometry><box><size>1.1 0.3 1.0</size></box></geometry></collision>
+      <visual name="v"><geometry><box><size>1.1 0.3 1.0</size></box></geometry>
+        <material><ambient>0.6 0.4 0.2 1</ambient><diffuse>0.6 0.4 0.2 1</diffuse></material>
+      </visual>
+    </link>
+  </model>
+</sdf>
