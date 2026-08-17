@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>object_patrol</name>
+  <version>0.1.0</version>
+  <description>Object patrol robot: patrol a known map and locate objects with YOLO + LiDAR fusion</description>
+  <maintainer email="mylifestyle.mh9482@gmail.com">m-horiuchi</maintainer>
+  <license>Apache-2.0</license>
+
+  <depend>rclpy</depend>
+  <depend>object_patrol_msgs</depend>
+
+  <test_depend>python3-pytest</test_depend>
+
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>
