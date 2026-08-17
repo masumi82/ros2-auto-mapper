@@ -18,5 +18,6 @@ setup(
     license='Apache-2.0',
     entry_points={'console_scripts': [
         'yolo_detector = object_patrol.yolo_detector:main',
+        'set_initial_pose = object_patrol.set_initial_pose:main',
     ]},
 )
