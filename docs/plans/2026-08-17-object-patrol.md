@@ -13,7 +13,7 @@
 - 設計書: `docs/specs/2026-08-17-object-patrol-design.md`(本計画の正)
 - ブランチ: `feature/object-patrol`。コミットはすべてこのブランチへ
 - 開発場所: リポジトリ `~/persol_ws/ros/ros2-auto-mapper/` 内にパッケージを作成し、`~/ros2_ws/src/` へシンボリックリンクしてビルド(直接コミット可能にするため)
-- 起動スクリプトは必ず `export FASTRTPS_DEFAULT_PROFILES_FILE=~/ros2_ws/fastrtps_profile.xml` を含める(前回の教訓: export忘れは「手動○・スクリプト×」の症状を起こす)
+- 起動スクリプトは必ず `export FASTRTPS_DEFAULT_PROFILES_FILE=~/ros2_ws/fastdds_wsl.xml` を含める(前回の教訓: export忘れは「手動○・スクリプト×」の症状を起こす)
 - `export TURTLEBOT3_MODEL=waffle_pi`(カメラ搭載モデル。前回のburgerではない)
 - YOLO信頼度しきい値 0.6 / 推論間引き 2〜3fps / 同一物体統合距離 0.5m / 確定に3フレーム観測
 - Gazebo/長時間プロセスは `run_in_background` で起動し、pkill時は `[r]`ブラケットパターン+単独コマンド(前回の教訓)
@@ -497,7 +497,7 @@ def main():
 ```bash
 #!/bin/bash
 set -e
-export FASTRTPS_DEFAULT_PROFILES_FILE=~/ros2_ws/fastrtps_profile.xml
+export FASTRTPS_DEFAULT_PROFILES_FILE=~/ros2_ws/fastdds_wsl.xml
 export TURTLEBOT3_MODEL=waffle_pi
 source /opt/ros/humble/setup.bash
 source ~/ros2_ws/install/setup.bash
@@ -793,7 +793,7 @@ def main():
 - Consumes: これまでの全成果物
 - Produces: 検証済みシステム一式+エビデンス
 
-- [ ] **Step 1: ワールド作成** — 前回の密閉ハウスworld(封鎖壁・ドアプラグ入り)をコピーし、Task 2の採用モデルを各部屋に計6〜8個 `<include>` で配置。**配置座標を一覧表(正解表)としてdocs/object_patrol_result.mdに記録**(LiDAR高さ16cmに実体がある置き方にする)
+- [ ] **Step 1: ワールド作成** — 前回の密閉ハウスworld(封鎖壁・ドアプラグ入り)をコピーし、Task 2の採用モデルを各部屋に計6〜8個 `<include>` で配置。**Task 2確定事項**: 採用モデルは person_standing(person 0.61-0.74) / person_walking(person 0.93) / fire_hydrant(fire hydrant 0.73) / stop_light(traffic light 0.91) / robocup_spl_ball(frisbee 0.65、CG誤分類だが安定のため正解クラス=frisbeeと定義)。**ワールドの<scene>にambient 0.9・shadows false を必ず設定**(暗いとfire_hydrantがtraffic light誤分類に落ちる等、全滅リスク)。不採用: stop_sign(メッシュ不解決)・chair/cafe_table(低視点で認識不可)・postbox/beer/oak_tree(弱)。**配置座標を一覧表(正解表)としてdocs/object_patrol_result.mdに記録**(LiDAR高さ16cmに実体がある置き方にする)
 - [ ] **Step 2: waypoint実座標調整** — 地図をRVizで開き各部屋中央の座標を読んでpatrol_points.yamlを更新
 - [ ] **Step 3: 統合実行** — `run_object_patrol.sh` で全系(Gazebo→Nav2→initialpose→yolo_detector→object_mapper→patrol_node)を起動し完走させる
 - [ ] **Step 4: 検証** — report.mdの発見物体を正解表と突き合わせ:
