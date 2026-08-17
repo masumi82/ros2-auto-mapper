@@ -68,8 +68,13 @@ done
 echo "Nav2 bond timers: $(grep -c 'Creating bond timer' "$LOG/nav2.log")"
 
 step "4. AMCL初期位置"
-timeout 120 ros2 run object_patrol set_initial_pose --ros-args \
-  -p x:=$X -p y:=$Y -p use_sim_time:=true 2>&1 | grep -E "TF|giving up" | tail -1
+IP_OUT=$(timeout 120 ros2 run object_patrol set_initial_pose --ros-args \
+  -p x:=$X -p y:=$Y -p use_sim_time:=true 2>&1 | grep -E "TF confirmed|giving up" | tail -1)
+echo "$IP_OUT"
+if ! echo "$IP_OUT" | grep -q "TF confirmed"; then
+  echo "ERROR: map->odom TF not established; aborting before patrol" >&2
+  exit 1
+fi
 echo "initial pose sequence done ($X, $Y)"
 
 if [ "$PATROL" = "1" ]; then
