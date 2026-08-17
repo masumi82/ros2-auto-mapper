@@ -16,5 +16,7 @@ setup(
     maintainer_email='mylifestyle.mh9482@gmail.com',
     description='Object patrol robot: patrol a known map and locate objects with YOLO + LiDAR fusion',
     license='Apache-2.0',
-    entry_points={'console_scripts': []},
+    entry_points={'console_scripts': [
+        'yolo_detector = object_patrol.yolo_detector:main',
+    ]},
 )
