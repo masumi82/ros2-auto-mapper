@@ -19,5 +19,6 @@ setup(
     entry_points={'console_scripts': [
         'yolo_detector = object_patrol.yolo_detector:main',
         'set_initial_pose = object_patrol.set_initial_pose:main',
+        'patrol_node = object_patrol.patrol_node:main',
     ]},
 )
