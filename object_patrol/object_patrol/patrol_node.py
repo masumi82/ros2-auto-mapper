@@ -14,7 +14,9 @@ STATUS_SUCCEEDED = 4
 
 
 class PatrolNode(Node):
-    SPIN_SPEED = 0.5  # rad/s(検出のため低速)
+    # 0.25rad/s: 2.5fps推論だと1周31フレームでは小物体が1-2フレームしか映らない
+    # (統合実行1回目の実測)。半減して1周63フレーム確保
+    SPIN_SPEED = 0.25  # rad/s
 
     def __init__(self):
         super().__init__('patrol_node')

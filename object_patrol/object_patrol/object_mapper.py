@@ -21,7 +21,8 @@ from object_patrol_msgs.msg import DetectedObjects
 
 HFOV = 1.085595  # waffle_piカメラ水平画角[rad]
 IMG_WIDTH = 640
-MAX_RANGE = 5.0  # これより遠い検出は捨てる(壁越し誤登録防止)
+MAX_RANGE = 3.5  # これより遠い検出は捨てる(遠距離のまぐれ検出が誤登録の温床)
+WINDOW_DEG = 2.0  # LiDAR距離抽出の方位角窓(細いポールで壁ビーム混入を減らす)
 
 
 class ObjectMapper(Node):
@@ -29,7 +30,8 @@ class ObjectMapper(Node):
         super().__init__('object_mapper')
         self.declare_parameter('report_dir', os.path.expanduser('~/ros2_ws/object_report'))
         self.declare_parameter('map_yaml', os.path.expanduser('~/ros2_ws/maps/house_sealed_final.yaml'))
-        self.registry = ObjectRegistry(merge_dist=0.5, confirm_frames=3)
+        # 0.8/4: 統合実行1回目の実測調整(0.5/3では重複クラスタとまぐれ誤登録が残った)
+        self.registry = ObjectRegistry(merge_dist=0.8, confirm_frames=4)
         self.last_scan = None
         self.tf_buffer = tf2_ros.Buffer(cache_time=Duration(seconds=10.0))
         self.tf_listener = tf2_ros.TransformListener(self.tf_buffer, self)
@@ -50,7 +52,7 @@ class ObjectMapper(Node):
         for d in msg.objects:
             bearing = pixel_to_bearing((d.x1 + d.x2) / 2.0, IMG_WIDTH, HFOV)
             rng = scan_range_at(list(scan.ranges), scan.angle_min,
-                                scan.angle_increment, bearing)
+                                scan.angle_increment, bearing, window_deg=WINDOW_DEG)
             if rng is None or rng > MAX_RANGE:
                 continue
             x, y = bearing_range_to_xy(bearing, rng)

@@ -19,12 +19,13 @@ def test_right_edge_is_negative_half_fov():
     assert pixel_to_bearing(640, 640, HFOV) == pytest.approx(-HFOV / 2, abs=1e-6)
 
 
-def test_scan_range_median_ignores_inf():
-    # 360本・1度刻み。bearing=0の±2度に有効値[2.0, 2.2]とinf → 中央値は上位側の2.2
+def test_scan_range_returns_nearest_valid():
+    # 360本・1度刻み。bearing=0の±2度に有効値[2.0, 2.2]とinf
+    # → 最近傍値2.0(細いポールは背後の壁より手前にあるため最近傍を採用)
     ranges = [float('inf')] * 360
     ranges[359], ranges[0], ranges[1] = 2.0, float('inf'), 2.2
     r = scan_range_at(ranges, 0.0, math.radians(1), 0.0, window_deg=2.0)
-    assert r == pytest.approx(2.2)
+    assert r == pytest.approx(2.0)
 
 
 def test_scan_range_returns_none_when_all_invalid():
