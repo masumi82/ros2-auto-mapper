@@ -1,0 +1,14 @@
+# 巡回ポイント(house_sealed_final地図のフリー空間から距離変換で自動抽出、
+# クリアランス1.0m以上の極大点。西回り→東回りの一筆書き順)
+patrol_points:
+  - {name: living,     x: -2.69, y: 3.91, yaw: 3.14}
+  - {name: west,       x: -4.49, y: 3.36, yaw: 3.14}
+  - {name: far_west,   x: -5.99, y: 3.31, yaw: -1.57}
+  - {name: west_south, x: -6.34, y: -0.19, yaw: 0.0}
+  - {name: mid_west,   x: -3.94, y: 1.06, yaw: 0.0}
+  - {name: center,     x: -1.29, y: 1.06, yaw: 1.57}
+  - {name: kitchen,    x: -1.19, y: 4.11, yaw: 1.57}
+  - {name: north_east, x: 1.06,  y: 3.91, yaw: -1.57}
+  - {name: east,       x: 3.31,  y: 1.21, yaw: 0.0}
+  - {name: far_east,   x: 4.81,  y: 1.26, yaw: 0.0}
+  - {name: south_east, x: 6.01,  y: -1.19, yaw: 3.14}

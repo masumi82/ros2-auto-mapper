@@ -113,6 +113,17 @@ ros2 run auto_mapper auto_explorer --ros-args -p use_sim_time:=true  # 探索再
 - 稼働中のRViz+Nav2画面: ![稼働画面](docs/images/result_sealed_run2_screen.png)
 - 途中経過(西半分のみの時点): [result_sealed_final_map.png](docs/images/result_sealed_final_map.png)
 
+## 第2弾: 物体探索パトロールロボット object_patrol(feature/object-patrol)
+
+自律地図化で作った地図を再利用し、**AMCLで自己位置推定しながら家を巡回し、
+YOLOv8で物体を発見してカメラ+LiDARフュージョンで位置を地図に記録する**ロボット。
+
+- 自作ノード3つ: `patrol_node`(巡回・アクション通信)/ `yolo_detector`(画像認識・トピック通信)/ `object_mapper`(フュージョン・サービス通信)
+- 検証結果: 配置7物体中6個発見(86%)、位置誤差すべて0.5m以内 → [docs/object_patrol_result.md](docs/object_patrol_result.md)
+- 設計書: [docs/specs/2026-08-17-object-patrol-design.md](docs/specs/2026-08-17-object-patrol-design.md) / 実装計画: [docs/plans/2026-08-17-object-patrol.md](docs/plans/2026-08-17-object-patrol.md)
+- 実行: `WORLD=worlds/object_house.world PATROL=1 scripts/run_object_patrol.sh`
+- 発見物体入り地図: ![物体マップ](docs/images/object_map_result.png)
+
 ## ハマりどころ(抜粋)
 
 実際に踏んだ罠と対策の完全版は [docs/lessons.md](docs/lessons.md) にあります。代表例:

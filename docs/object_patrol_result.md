@@ -1,0 +1,79 @@
+# object_patrol 統合検証結果
+
+- 日付: 2026-08-17
+- ワールド: `worlds/object_house.world`(密閉TB3ハウス + 明るい照明 + 物体7個)
+- 地図: `house_sealed_final`(前回の自動地図化プロジェクトの成果物を再利用)
+- 巡回: `config/patrol_points.yaml` の11 waypoint、各点で360°見回し(0.25 rad/s)
+
+## 正解表(配置物体)
+
+| # | モデル | 期待クラス | 配置座標 (x, y) | 備考 |
+|---|---|---|---|---|
+| 1 | person_standing | person | (-4.90, 4.30) | 西の部屋 |
+| 2 | person_walking | person | (6.20, 0.20) | 東端の部屋 |
+| 3 | fire_hydrant | fire hydrant | (-6.30, 1.50) | 西廊下 |
+| 4 | stop_light | traffic light | (-0.50, 3.90) | キッチン北 |
+| 5 | robocup_spl_ball | frisbee | (-2.20, 4.35) | リビング北(YOLOがCGボールをfrisbeeと安定認識するため期待クラス=frisbeeと定義) |
+| 6 | person_standing | person | (3.30, 2.60) | 東の部屋 |
+| 7 | fire_hydrant | fire hydrant | (5.50, -1.30) | 南東の部屋 |
+
+## 判定基準(設計書§6)
+
+- 発見率 = 発見数 / 配置数 ≥ 80%(7個中6個以上)
+- 位置誤差 = 発見位置と正解座標の距離 ≤ 0.5 m
+- 誤検出(正解表にない登録)は0を目標
+
+## 実行結果(3回目 = 最終、10/11 waypoint巡回)
+
+### 判定: **合格**(発見率86%、位置誤差すべて0.5m以内)
+
+| # | 期待 | 発見位置 | 誤差 | 観測回数 | 判定 |
+|---|---|---|---|---|---|
+| 1 | person (-4.90, 4.30) | (-4.91, 4.16) | 0.14 m | 41 | ✓ |
+| 2 | person (6.20, 0.20) | (5.87, -0.07) | 0.43 m | 50 | ✓ |
+| 3 | fire hydrant (-6.30, 1.50) | (-6.18, 1.52) | 0.12 m | 25 | ✓ |
+| 4 | traffic light (-0.50, 3.90) | (-0.12, 3.91) | 0.38 m | 5 | ✓ |
+| 5 | frisbee (-2.20, 4.35) | — | — | — | ✗ 未発見 |
+| 6 | person (3.30, 2.60) | (3.04, 2.54) | 0.27 m | 8 | ✓ |
+| 7 | fire hydrant (5.50, -1.30) | (5.33, -1.43) | 0.21 m | 14 | ✓ |
+
+- 発見率: **6/7 = 86%** ✓
+- 位置誤差: 発見物体はすべて **0.5 m以内** ✓
+- 誤検出: **3件**(目標0に未達。下記)
+  - bed (-7.45, 3.73) 5回 — 地図西端の家具をYOLOがbedと誤認
+  - traffic light (-0.31, 4.91) 5回 — stop_lightの壁越しゴースト(実体の1.0 m北)
+  - traffic light (1.86, 1.98) 6回 — TB3ハウス備え付け家具の誤認
+- 未発見のボール: LiDAR高さ(16 cm)を球(約10 cm)が下回り距離が取れない+
+  低速回転でも映るのが1〜2フレームで確定条件(4フレーム)に届かない。設計書§7の既知リスクどおり
+- スキップ: west_south (-6.34, -0.19) — 地図端の未知領域境界でNav2がABORT(2回)
+
+### チューニングの経緯(1回目 → 3回目)
+
+1回目(初期パラメータ: 中央値・±3°・5 m・3フレーム確定・統合0.5 m・回転0.5 rad/s)は
+**17物体**(重複クラスタ+誤検出10件)、traffic light誤差0.52 m、で不合格。実測から:
+
+| 変更 | 理由(実測) |
+|---|---|
+| LiDAR距離: 中央値 → **最近傍値** | 細いポール(stop_light)はビーム数本しか当たらず、中央値は背後の壁を拾って0.5 m超ずれた |
+| 方位角窓: ±3° → ±2° | 壁ビーム混入を低減 |
+| MAX_RANGE: 5 m → 3.5 m | 遠距離のまぐれ検出が誤登録の温床だった |
+| 確定: 3 → 4フレーム / 統合: 0.5 → 0.8 m | まぐれ3フレーム誤登録と重複クラスタの抑制 |
+| 見回し回転: 0.5 → 0.25 rad/s | 2.5 fps推論では1周31フレームしかなく小物体が確定に届かなかった |
+
+2回目は initialpose が AMCL 起動前に流れて全ゴール即時拒否(0物体)。
+set_initial_pose を「**map→odom TFの成立を確認するまで送信し続ける**」方式に改修して解決。
+
+## エビデンス
+
+- `docs/images/evidence_object_gazebo_run.mp4` — 巡回動画(Gazebo俯瞰。LiDARスキャンを放ちながら部屋間を移動)
+- `docs/images/evidence_object_rviz_run.mp4` — 巡回動画(RViz全体地図。AMCL粒子群・計画経路・Navigation active表示。画角は `config/rviz_fullmap.rviz` で再現可能)
+- `docs/images/object_map_result.png` — 発見物体入り地図(最終出力)
+- `docs/images/evidence_gazebo_objects.png` — 物体配置済みワールドのGazebo画面
+- `docs/images/evidence_rviz_nav_active.png` — 巡回完了時のRViz(Navigation/Localization active)
+- `docs/images/yolo_static_*.png` — 静止認識テスト(person / fire hydrant / traffic light)
+
+## 実行しなかった経路(正直な申告)
+
+- 床平面仮定フォールバック(設計書§4③)は未実装(最近傍値化で基準を満たしたため)
+- 再実行時の再現性(3回目の1回のみで判定。1回目と同傾向の検出は確認済み)
+- 実機(ラズパイ+USBカメラ)への展開は本プロジェクトのスコープ外
