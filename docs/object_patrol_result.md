@@ -65,6 +65,8 @@ set_initial_pose を「**map→odom TFの成立を確認するまで送信し続
 
 ## エビデンス
 
+- `docs/images/evidence_object_gazebo_run.mp4` — 巡回動画(Gazebo俯瞰。LiDARスキャンを放ちながら部屋間を移動)
+- `docs/images/evidence_object_rviz_run.mp4` — 巡回動画(RViz全体地図。AMCL粒子群・計画経路・Navigation active表示。画角は `config/rviz_fullmap.rviz` で再現可能)
 - `docs/images/object_map_result.png` — 発見物体入り地図(最終出力)
 - `docs/images/evidence_gazebo_objects.png` — 物体配置済みワールドのGazebo画面
 - `docs/images/evidence_rviz_nav_active.png` — 巡回完了時のRViz(Navigation/Localization active)
